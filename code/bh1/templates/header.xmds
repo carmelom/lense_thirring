@@ -1,0 +1,41 @@
+  <name>{{conf.exec_filename}}</name>
+
+  <author>CM</author>
+
+  <description/>
+
+  <features>
+    <auto_vectorise/>
+    <benchmark/>
+    <bing/>
+    <chunked_output size="100MB"/>
+    <fftw plan="measure"/>
+    <openmp threads="8"/>
+    <globals><![CDATA[
+    const real N = 400.0;
+    const real a_scatt = 0.0004150924143715271;
+	const real g = 4*M_PI*a_scatt;
+    {% for key, value in conf.globals.items() %}
+    real {{key}} = {{value}};
+    {% endfor %}
+	]]></globals>
+  </features>
+
+  <geometry>
+    <propagation_dimension>t</propagation_dimension>
+    <transverse_dimensions>
+        <dimension name="x" domain="(-10, 10)" lattice="256"/>
+        <dimension name="y" domain="(-10, 10)" lattice="256"/>
+    </transverse_dimensions>
+  </geometry>
+
+  <vector name="potential" dimensions="x y" type="complex">
+    <components>V1</components>
+    <initialisation>
+        <![CDATA[
+        float r2 = x*x + y*y;
+        if (r2 < radius*radius) V1 = 0; else V1 = U0;
+        V1 += - i*Gamma * exp(-r2 / 2 / sigma*sigma);
+        ]]>
+    </initialisation>
+  </vector>

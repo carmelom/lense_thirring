@@ -1,0 +1,24 @@
+build_dir: build
+continue: {init_filename: init_continue.h5, output_filename: continue.h5, runtime: 50}
+dt: 1e-05
+excite:
+  breakpoint_filename: excite_br.h5
+  globals: {Ue: 0.75, cx: 15, cy: 0, sx: 5, sy: 1}
+  init_filename: groundstate.h5
+  output_filename: excite.h5
+  runtime: 0.2
+globals: {Gamma: 500, Lambda: 1, U0: 10000, alpha: 0.0065, nu: 10, radius: 50, sigma: 3}
+groundstate: {output_filename: groundstate.h5, runtime: 15}
+h5filepath: '{sequence_index:04d}/bh_{run_number:04d}.h5'
+imprint_pair:
+  breakpoint_filename: imprint_pair_br.h5
+  fixed_x_index: 43
+  fixed_y_index: 128
+  globals: {dv: 0.7, v1: -1, v2: 1, xv: 30}
+  init_filename: groundstate.h5
+  output_filename: imprint_pair.h5
+  runtime: 3
+realtime: {fixed_x_index: 43, fixed_y_index: 128, init_filename: imprint_pair_br.h5,
+  output_filename: realtime.h5, runtime: 100}
+run_dir: run
+sampling_dt: 0.125

@@ -1,0 +1,67 @@
+<simulation xmds-version="2">
+
+    {% include 'header.xmds' %}
+
+
+    <vector name="wavefunction" dimensions="x y" type="complex">
+        <components>psi</components>
+            <initialisation>
+                <![CDATA[
+                float r = sqrt(x*x + y*y);
+                complex phase = exp(i * nu * atan2(y, x));
+                if (r < radius && r > 0) psi = sqrt(n0) * tanh(r); else psi = 0;
+                psi *= phase;
+                ]]>
+            </initialisation>
+    </vector>
+
+    <computed_vector name="normalization" dimensions="" type="real">
+        <components>
+            Norm
+        </components>
+        <evaluation>
+            <dependencies>wavefunction</dependencies>
+            <![CDATA[Norm = mod2(psi);]]>
+        </evaluation>
+    </computed_vector>
+
+    <sequence>
+        <integrate algorithm="ARK45" interval="{{conf.gs_runtime}}" steps="400" tolerance="1e-06">
+            <samples> 400 </samples>
+            <!-- <filters where="step end">
+                <filter>
+                    <dependencies>wavefunction normalization</dependencies>
+                    <![CDATA[psi *= sqrt(N/Norm);]]>
+                </filter>
+            </filters> -->
+            <operators>
+                <operator kind="ip">
+                    <operator_names>Tx</operator_names>
+                    <![CDATA[Tx = -(i + Lambda) * 0.5*kx*kx;]]>
+                </operator>
+                <operator kind="ip">
+                    <operator_names>Ty</operator_names>
+                    <![CDATA[Ty = -(i + Lambda) * 0.5*ky*ky;]]>
+                </operator>
+                <integration_vectors>wavefunction</integration_vectors>
+                <dependencies>potential</dependencies>
+                <![CDATA[
+        		dpsi_dt = Tx[psi] + Ty[psi] - (i + Lambda) * (V1 + g*mod2(psi) - g*n0)*psi;
+        		]]>
+            </operators>
+        </integrate>
+        <breakpoint filename="{{conf.output_filename | replace(".h5", "")}}" format="hdf5">
+            <dependencies basis="x y">wavefunction</dependencies>
+        </breakpoint>
+    </sequence>
+
+    <!-- <output/> -->
+    <output filename="{{conf.output_filename | replace(".h5", "")}}_full">
+        <sampling_group basis="x y" initial_sample="yes">
+            <moments>psiR psiI</moments>
+            <dependencies>wavefunction</dependencies>
+            <![CDATA[_SAMPLE_COMPLEX(psi);]]>
+        </sampling_group>
+    </output>
+
+</simulation>

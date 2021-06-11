@@ -1,0 +1,20 @@
+
+<vector name="max_norm" dimensions="" type="real">
+    <components>nmax</components>
+    <initialisation>
+        <dependencies>wavefunction</dependencies>
+        <![CDATA[
+                nmax = mod2(psi(x_index => {{conf.fixed_x_index}}, y_index => {{conf.fixed_y_index}})) / _lattice_x / _lattice_y / _dx / _dy;
+            ]]>
+    </initialisation>
+</vector>
+
+<computed_vector name="calc_max_norm" dimensions="" type="real">
+    <components>c_nmax</components>
+    <evaluation>
+        <dependencies>wavefunction</dependencies>
+        <![CDATA[
+                c_nmax = mod2(psi(x_index => {{conf.fixed_x_index}}, y_index => {{conf.fixed_y_index}})) / _lattice_x / _lattice_y / _dx / _dy;
+            ]]>
+    </evaluation>
+</computed_vector>

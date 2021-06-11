@@ -1,0 +1,78 @@
+<simulation xmds-version="2">
+
+    {% include '_header.xmds' %}
+    {% include '_geometry.xmds' %}
+    {% include '_potential.xmds' %}
+
+
+    <vector name="wavefunction" dimensions="x y" type="complex">
+        <components>psi</components>
+            <initialisation kind="hdf5">
+                <filename>{{conf.init_filename}}</filename>
+            </initialisation>
+    </vector>
+
+    {% include '_cont_norm.xmds' %}
+
+    <sequence>
+        <filter>
+            <dependencies>wavefunction</dependencies>
+                <![CDATA[
+                    // printf("Imprinting");
+                    // complex phase = v1 * atan2(y - dv, x - xv) + v2 * atan2(y + dv, x - xv);
+                    complex phase = v1 * atan2(y, x - xv - dv) + v2 * atan2(y, x - xv + dv);
+                    psi *= exp(i * phase);
+                    ]]>
+        </filter>
+        <integrate algorithm="ARK45" interval="{{conf.runtime}}" steps="{{ (((conf.runtime / conf.dt / 100) | round) * 100) | int }}" tolerance="1e-09">
+            <samples> {{ ((conf.runtime / conf.sampling_dt) | round) | int }} </samples>
+            <filters where="step end">
+                <filter>
+                    <dependencies>wavefunction max_norm calc_max_norm</dependencies>
+                    <![CDATA[
+                            psi *= sqrt(nmax / c_nmax);
+                        ]]>
+                </filter>
+            </filters>
+            <operators>
+                <operator kind="ip" type="real">
+                    <operator_names>Txr</operator_names>
+                    <![CDATA[Txr = -Lambda * kx*kx;]]>
+                </operator>
+                <operator kind="ip" type="real">
+                    <operator_names>Tyr</operator_names>
+                    <![CDATA[Tyr = -Lambda * ky*ky;]]>
+                </operator>
+
+                <!-- <operator kind="ip" type="imaginary">
+                    <operator_names>Txi</operator_names>
+                    <![CDATA[Txi = -i * kx*kx;]]>
+                </operator>
+                <operator kind="ip" type="imaginary">
+                    <operator_names>Tyi</operator_names>
+                    <![CDATA[Tyi = -i * ky*ky;]]>
+                </operator> -->
+
+                <integration_vectors>wavefunction</integration_vectors>
+                <dependencies>potential</dependencies>
+                <![CDATA[
+                // dpsi_dt = Txr[psi] + Txi[psi] + Tyr[psi] + Tyi[psi] - (i + Lambda) * (alpha*mod2(psi) + V1 - 1)*psi;
+        		dpsi_dt = Txr[psi] + Tyr[psi] - Lambda * (alpha*mod2(psi) + V1 - 1)*psi;
+        		]]>
+            </operators>
+        </integrate>
+        <breakpoint filename="{{conf.breakpoint_filename | replace(".h5", "")}}" format="hdf5">
+            <dependencies basis="x y">wavefunction</dependencies>
+        </breakpoint>
+    </sequence>
+
+    <!-- <output/> -->
+    <output filename="{{conf.output_filename | replace(".h5", "")}}">
+        <sampling_group basis="x y" initial_sample="no">
+            <moments>psiR psiI</moments>
+            <dependencies>wavefunction</dependencies>
+            <![CDATA[_SAMPLE_COMPLEX(psi);]]>
+        </sampling_group>
+    </output>
+
+</simulation>

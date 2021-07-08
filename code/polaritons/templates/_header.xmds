@@ -1,0 +1,23 @@
+  <name>{{conf.exec_filename}}</name>
+
+  <author>CM</author>
+
+  <description/>
+
+  <features>
+    <auto_vectorise/>
+    <benchmark/>
+    <bing/>
+    <chunked_output size="100MB"/>
+    <!-- <fftw plan="exhaustive"/> -->
+    <fftw plan="estimate" threads="4"/>
+    <openmp threads="4"/>
+
+    <globals><![CDATA[
+    {% for key, value in conf.globals.items() %}
+    real {{key}} = {{value}};
+    {% endfor %}
+	]]></globals>
+  </features>
+
+  <!-- <driver name="distributed-mpi" /> -->

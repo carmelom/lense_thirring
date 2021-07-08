@@ -1,0 +1,11 @@
+<geometry>
+  <propagation_dimension>t</propagation_dimension>
+  <transverse_dimensions>
+      <!-- <dimension name="x" domain="(-20, 20)" lattice="256"/>
+      <dimension name="y" domain="(-20, 20)" lattice="256"/> -->
+
+      <dimension name="x" domain="(-20, 20)" lattice="256"/>
+      <dimension name="y" domain="(-20, 20)" lattice="256"/>
+
+  </transverse_dimensions>
+</geometry>

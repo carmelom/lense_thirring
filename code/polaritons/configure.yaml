@@ -1,0 +1,33 @@
+# template configuration
+
+build_dir:               build
+run_dir:                 run
+h5filepath:              "{sequence_index:04d}/bh_{run_number:04d}.h5"
+
+dt:                      1e-5  # 1e-7
+sampling_dt:             1e-2  # 1e-3
+
+realtime:
+    output_filename:     realtime.h5
+    runtime:             1  # 0.5
+    algorithm:           ARK45
+    # globals:
+    #     # vortex pair
+    #     xv:              30
+    #     dv:              2
+    #     v1:              -1
+    #     v2:              1
+
+
+continue:
+    init_filename:       init_continue.h5
+    output_filename:     continue.h5
+    runtime:             50
+
+
+globals:
+    alpha:               0.0065
+    N0:                  1
+    # vorticity
+    nu:                  4
+    radius:              3

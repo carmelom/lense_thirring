@@ -1,0 +1,16 @@
+<simulation xmds-version="2">
+
+    {% include '_header.xmds' %}
+    {% include '_geometry.xmds' %}
+
+    {% include '_init_wavefunction.xmds' %}
+
+    <sequence>
+        <breakpoint filename="{{conf.output_filename | replace(".h5", "")}}" format="hdf5">
+            <dependencies basis="x y">wavefunction</dependencies>
+        </breakpoint>
+    </sequence>
+
+    <output/>
+
+</simulation>

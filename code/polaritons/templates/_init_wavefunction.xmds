@@ -1,0 +1,12 @@
+
+<vector name="wavefunction" dimensions="x y" type="complex">
+    <components>psi</components>
+        <initialisation>
+            <![CDATA[
+            float r = sqrt(x*x + y*y);
+            psi = N0 / alpha * exp(-r*r / 2 / radius / radius);
+            complex phase = nu * atan2(y, x);
+            if (nu != 0)  psi *= tanh(pow(r, nu)) * exp(i * phase);
+            ]]>
+        </initialisation>
+</vector>
